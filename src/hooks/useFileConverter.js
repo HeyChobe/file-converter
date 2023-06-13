@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { txtToXml, txtToJson, xmlToTxt, jsonToTxt } from "../util/fileUtils";
+import fileConverterService from "@/services/fileConverterService";
 
 export const useFileConverter = () => {
   const [result, setResult] = useState({
@@ -9,25 +9,25 @@ export const useFileConverter = () => {
   });
 
   const convertTxtToXml = async (file) => {
-    const response = await txtToXml(file);
+    const response = await fileConverterService.txtToXml(file);
     setResult(response);
     return response.status;
   };
 
   const convertTxtToJson = async (file) => {
-    const response = await txtToJson(file);
+    const response = await fileConverterService.txtToJson(file);
     setResult(response);
     return response.status;
   };
 
   const convertXmlToTxt = async (file) => {
-    const response = await xmlToTxt(file);
+    const response = await fileConverterService.xmlToTxt(file);
     setResult(response);
     return response.status;
   };
 
   const convertJsonToTxt = async (file) => {
-    const response = await jsonToTxt(file);
+    const response = await fileConverterService.jsonToTxt(file);
     setResult(response);
     return response.status;
   };

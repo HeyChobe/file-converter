@@ -1,7 +1,6 @@
 "use client";
 
 import { useFileConverter } from "@/hooks/useFileConverter";
-import { useState } from "react";
 
 export default function Home() {
   const {
@@ -13,7 +12,7 @@ export default function Home() {
   } = useFileConverter();
 
   const onChangeFile = async (file) => {
-    const status = await convertXmlToTxt(file);
+    const status = await convertXmlToTxt(file); //change for the convert type needed
     if (!status) alert("error");
   };
 
