@@ -1,0 +1,69 @@
+.containerFile {
+    display: flex;
+    width: 224px;
+    padding: 8px 0;
+    margin-bottom: 24px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 10px;
+    color: black;
+}
+
+.iconFile {
+    margin-left: 10px;
+}
+
+.spanFile {
+    font-size: 1.3rem;
+}
+
+.inputFile {
+    position: absolute;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.sectionStyle {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+}
+
+.sectionStyle>div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview{
+    width: 664px;
+    height: 524px;
+    padding: 8px;
+    overflow: auto;
+    border: 1px solid white;
+    border-radius: 20px;
+    margin-bottom: 24px;
+}
+
+.btn{
+    color: black;
+    font-size: 1.25rem;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    border: 1px solid gray;
+}
