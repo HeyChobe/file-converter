@@ -22,7 +22,10 @@ export const txtToXml = (content) => {
       .join("")}
     </clientes>
   `;
-  return obtainBlob(TRANSLATE_TYPE.XML, xmlData);
+  return {
+    blob: obtainBlob(TRANSLATE_TYPE.XML, xmlData),
+    convertedContent: xmlData,
+  };
 };
 
 export const txtToJson = (content) => {
@@ -63,7 +66,10 @@ export const txtToJson = (content) => {
   });
 
   const jsonData = JSON.stringify(dataToJson);
-  return obtainBlob(TRANSLATE_TYPE.JSON, jsonData);
+  return {
+    blob: obtainBlob(TRANSLATE_TYPE.JSON, jsonData),
+    convertedContent: jsonData,
+  };
 };
 
 export const xmlToTxt = (xmlContent) => {
@@ -87,7 +93,10 @@ export const xmlToTxt = (xmlContent) => {
     })
     .join("\n");
 
-  return obtainBlob(TRANSLATE_TYPE.TXT, txtData);
+  return {
+    blob: obtainBlob(TRANSLATE_TYPE.TXT, txtData),
+    convertedContent: txtData,
+  };
 };
 
 export const jsonToTxt = (content) => {
@@ -113,5 +122,8 @@ export const jsonToTxt = (content) => {
     })
     .join("\n");
 
-  return obtainBlob(TRANSLATE_TYPE.TXT, txtData);
+  return {
+    blob: obtainBlob(TRANSLATE_TYPE.TXT, txtData),
+    convertedContent: txtData,
+  };
 };

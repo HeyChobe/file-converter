@@ -15,11 +15,20 @@ const fileConverterService = {
         },
         body: JSON.stringify({ content }),
       });
-      const blob = await response.blob();
+      const responseJson = await response.json();
+
+      const blobData = Buffer.from(responseJson.blob, "base64");
+      const blob = new Blob([blobData], { type: "application/json" });
       const downloadLink = URL.createObjectURL(blob);
-      return { status: true, url: downloadLink, extension: "data.json" };
+
+      return {
+        status: true,
+        url: downloadLink,
+        extension: "data.json",
+        convertedContent: responseJson.convertedContent,
+      };
     } catch (error) {
-      return { status: false, url: "", extension: "" };
+      return { status: false, url: "", extension: "", convertedContent: "" };
     }
   },
   txtToXml: async (file) => {
@@ -32,11 +41,20 @@ const fileConverterService = {
         },
         body: JSON.stringify({ content }),
       });
-      const blob = await response.blob();
+      const responseJson = await response.json();
+
+      const blobData = Buffer.from(responseJson.blob, "base64");
+      const blob = new Blob([blobData], { type: "application/xml" });
       const downloadLink = URL.createObjectURL(blob);
-      return { status: true, url: downloadLink, extension: "data.xml" };
+
+      return {
+        status: true,
+        url: downloadLink,
+        extension: "data.xml",
+        convertedContent: responseJson.convertedContent,
+      };
     } catch (error) {
-      return { status: false, url: "", extension: "" };
+      return { status: false, url: "", extension: "", convertedContent: "" };
     }
   },
   jsonToTxt: async (file) => {
@@ -49,11 +67,20 @@ const fileConverterService = {
         },
         body: JSON.stringify({ content }),
       });
-      const blob = await response.blob();
+      const responseJson = await response.json();
+
+      const blobData = Buffer.from(responseJson.blob, "base64");
+      const blob = new Blob([blobData], { type: "text/plain" });
       const downloadLink = URL.createObjectURL(blob);
-      return { status: true, url: downloadLink, extension: "data.txt" };
+
+      return {
+        status: true,
+        url: downloadLink,
+        extension: "data.txt",
+        convertedContent: responseJson.convertedContent,
+      };
     } catch (error) {
-      return { status: false, url: "", extension: "" };
+      return { status: false, url: "", extension: "", convertedContent: "" };
     }
   },
   xmlToTxt: async (file) => {
@@ -66,11 +93,21 @@ const fileConverterService = {
         },
         body: JSON.stringify({ content }),
       });
-      const blob = await response.blob();
+
+      const responseJson = await response.json();
+
+      const blobData = Buffer.from(responseJson.blob, "base64");
+      const blob = new Blob([blobData], { type: "text/plain" });
       const downloadLink = URL.createObjectURL(blob);
-      return { status: true, url: downloadLink, extension: "data.txt" };
+
+      return {
+        status: true,
+        url: downloadLink,
+        extension: "data.txt",
+        convertedContent: responseJson.convertedContent,
+      };
     } catch (error) {
-      return { status: false, url: "", extension: "" };
+      return { status: false, url: "", extension: "", convertedContent: "" };
     }
   },
 };

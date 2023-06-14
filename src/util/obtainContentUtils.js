@@ -1,11 +1,12 @@
 import { TRANSLATE_TYPE } from "./constants";
 
-export const obtainDataFromTXT = (file) => {
+export const obtainDataFromTXT = (file, onlyStringRequired = false) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
       const content = e.target.result;
+      if (onlyStringRequired) return resolve(content);
       const clients = content.split(/\r?\n/);
       resolve(clients);
     };
@@ -35,12 +36,13 @@ export const obtainDataFromXML = (file) => {
   });
 };
 
-export const obtainDataFromJSON = (file) => {
+export const obtainDataFromJSON = (file, onlyStringRequired = false) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
       const content = e.target.result;
+      if (onlyStringRequired) return resolve(content);
       const jsonContent = JSON.parse(content);
       resolve(jsonContent);
     };
