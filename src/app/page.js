@@ -46,7 +46,10 @@ export default function Home() {
 
   const callConverter = async () => {
     let status = false;
-    console.log({ delimiter, secret });
+
+    if (delimiter === "" || secret === "")
+      return alert("Debes colocar un delimitador y una llave secreta");
+
     switch (selectedType) {
       case TRANSLATE_TYPE.TXT:
         status =
