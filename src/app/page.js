@@ -1,14 +1,15 @@
 "use client";
 
-import './global.css';
-import uploadIcon from './upload-icon.svg'
-import txtIcon from './txt-icon.svg'
-import jsonIcon from './json-icon.svg'
-import xmlIcon from './xml-icon.svg'
+import "./global.css";
+import uploadIcon from "./upload-icon.svg";
+import txtIcon from "./txt-icon.svg";
+import jsonIcon from "./json-icon.svg";
+import xmlIcon from "./xml-icon.svg";
 import styles from "./page.module.css";
-import Image from 'next/image'
+import Image from "next/image";
 import { useFileConverter } from "@/hooks/useFileConverter";
-import { useState } from 'react';
+import { useState } from "react";
+import { TRANSLATE_TYPE } from "@/util/constants";
 
 class TypeFile {
   id;
@@ -19,64 +20,72 @@ class TypeFile {
     this.name = nameP;
   }
 }
-const txtType = new TypeFile(0, '.txt');
-const jsonType = new TypeFile(1, '.json');
-const xmlType = new TypeFile(2, '.xml');
+const txtType = new TypeFile(0, "TXT");
+const jsonType = new TypeFile(1, "JSON");
+const xmlType = new TypeFile(2, "XML");
 
 export default function Home() {
   const {
     result,
+    originContent,
+    convertedContent,
+    obtainContent,
     convertXmlToTxt,
     convertTxtToJson,
     convertJsonToTxt,
     convertTxtToXml,
   } = useFileConverter();
 
-  const [inputFileName, setInputFileName] = useState('Subir archivo');
+  const [inputFile, setInputFile] = useState(null);
+  const [inputFileName, setInputFileName] = useState("Subir archivo");
   const [inputTypeIcon, setInputTypeIcon] = useState(uploadIcon);
   const [typeFiles, setTypeFiles] = useState([txtType, jsonType, xmlType]);
+  const [delimiter, setDelimiter] = useState(";");
+  const [secret, setSecret] = useState("");
+  const [selectedType, setSelectedType] = useState(-1);
 
-  const [uploadPreview, setUploadPreview] = useState('');
-  const [generatedPreview, setGeneratedPreview] = useState('');
-
-  const loadFileAsText = (file) => {
-    var fileToLoad = file;
-    var fileReader = new FileReader();
-    fileReader.onload = function (fileLoadedEvent) {
-      var textFromFileLoaded = fileLoadedEvent.target.result;
-      setUploadPreview(textFromFileLoaded);
-    };
-    fileReader.readAsText(fileToLoad, "UTF-8");
-  }
-
-  const callConverter = () => {
-    console.log('Should call API here');
-    setGeneratedPreview('asdasd');
-  }
+  const callConverter = async () => {
+    let status = false;
+    console.log({ delimiter, secret });
+    switch (selectedType) {
+      case TRANSLATE_TYPE.TXT:
+        status =
+          inputFile.type === "application/json"
+            ? await convertJsonToTxt(inputFile, delimiter, secret)
+            : await convertXmlToTxt(inputFile, delimiter, secret);
+        break;
+      case TRANSLATE_TYPE.JSON:
+        status = await convertTxtToJson(inputFile, delimiter, secret);
+        break;
+      case TRANSLATE_TYPE.XML:
+        status = await convertTxtToXml(inputFile, delimiter, secret);
+        break;
+      default:
+        return alert("Debes seleccionar un tipo de archivo");
+    }
+    if (!status) alert("error");
+  };
 
   const onChangeFile = async (file) => {
     switch (file.type) {
-      case 'text/plain':
+      case "text/plain":
         setInputTypeIcon(txtIcon);
         setTypeFiles([jsonType, xmlType]);
         break;
-      case 'text/xml':
+      case "text/xml":
         setInputTypeIcon(xmlIcon);
         setTypeFiles([txtType, jsonType]);
         break;
-      case 'application/json':
+      case "application/json":
         setInputTypeIcon(jsonIcon);
         setTypeFiles([txtType, xmlType]);
         break;
       default:
         return;
     }
-
+    setInputFile(file);
     setInputFileName(file.name);
-    loadFileAsText(file);
-
-    const status = await convertXmlToTxt(file); //change for the convert type needed
-    if (!status) alert("error");
+    await obtainContent(file);
   };
 
   return (
@@ -84,9 +93,16 @@ export default function Home() {
       <h2 style={{ marginBottom: 12 }}>File converter & encrypter</h2>
 
       <div className={styles.containerFile}>
-        {/* <Image src={inputTypeIcon} alt="file type icon" className={styles.iconFile} width={24} height={24} /> */}
-        <span className={styles.spanFile} id="spanFile">{inputFileName}</span>
-        <Image src={inputTypeIcon} alt="file type icon" className={styles.iconFile} width={24} height={24} />
+        <span className={styles.spanFile} id="spanFile">
+          {inputFileName}
+        </span>
+        <Image
+          src={inputTypeIcon}
+          alt="file type icon"
+          className={styles.iconFile}
+          width={24}
+          height={24}
+        />
         <input
           className={styles.inputFile}
           type="file"
@@ -97,41 +113,75 @@ export default function Home() {
         />
       </div>
 
-      <section style={{ display: uploadPreview ? "flex" : "none" }} className={styles.sectionStyle}>
+      <section
+        style={{ display: originContent ? "flex" : "none" }}
+        className={styles.sectionStyle}
+      >
         <div>
           <div className={styles.preview}>
-            <p>{uploadPreview}</p>
+            <p>{originContent}</p>
           </div>
 
           <label name="delimitator">Delimitador</label>
-          <input type="text" id="delimitator" name="delimitator" style={{ marginBottom: 20 }} />
+          <input
+            type="text"
+            id="delimitator"
+            name="delimitator"
+            style={{ marginBottom: 20 }}
+            value={delimiter}
+            onChange={(e) => setDelimiter(e.target.value)}
+          />
 
-          <label name="encryption_key">Clave de cifrado  </label>
-          <input type="text" id="encryption_key" name="encryption_key" />
+          <label name="encryption_key">Clave de cifrado </label>
+          <input
+            type="text"
+            id="encryption_key"
+            name="encryption_key"
+            value={secret}
+            onChange={(e) => {
+              setSecret(e.target.value);
+            }}
+          />
         </div>
 
-        <div style={{ alignSelf: 'center' }}>
+        <div style={{ alignSelf: "center" }}>
           <label name="file_type">Elije el tipo de archivo a convertir:</label>
-          <select id="file_type" name="file_type" defaultValue={"def"} style={{ marginBottom: 20 }}>
-            <option disabled value={"def"}>--Selecionar tipo--</option>
-            {
-              typeFiles.map(
-                (item) => {
-                  return (<option key={item.id} value={item.id}>{item.name}</option>)
-                }
-              )
-            }
+          <select
+            id="file_type"
+            name="file_type"
+            value={selectedType}
+            onChange={(e) => {
+              setSelectedType(parseInt(e.target.value));
+            }}
+            style={{ marginBottom: 20 }}
+          >
+            <option disabled value={-1}>
+              --Seleccionar tipo--
+            </option>
+            {typeFiles.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
           </select>
 
-          <button className={styles.btn} onClick={callConverter}>Convertir</button>
+          <button className={styles.btn} onClick={callConverter}>
+            Convertir
+          </button>
         </div>
 
-        <div style={{ opacity: generatedPreview ? 1 : 0 }}>
+        <div style={{ opacity: convertedContent ? 1 : 0 }}>
           <div className={styles.preview}>
-            <p>{generatedPreview}</p>
+            <p>{convertedContent}</p>
           </div>
 
-          <a className={styles.btn} href={result.url} download={result.extension}>DOWNLOAD</a>
+          <a
+            className={styles.btn}
+            href={result.url}
+            download={result.extension}
+          >
+            DOWNLOAD
+          </a>
         </div>
       </section>
     </main>

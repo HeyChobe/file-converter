@@ -35,26 +35,26 @@ export const useFileConverter = () => {
     setOriginContent(content);
   };
 
-  const convertTxtToXml = async (file) => {
-    const response = await fileConverterService.txtToXml(file);
+  const convertTxtToXml = async (file, delimiter, key) => {
+    const response = await fileConverterService.txtToXml(file, delimiter, key);
     setDataState(response);
     return response.status;
   };
 
-  const convertTxtToJson = async (file) => {
-    const response = await fileConverterService.txtToJson(file);
+  const convertTxtToJson = async (file, delimiter, key) => {
+    const response = await fileConverterService.txtToJson(file, delimiter, key);
     setDataState(response);
     return response.status;
   };
 
-  const convertXmlToTxt = async (file) => {
-    const response = await fileConverterService.xmlToTxt(file);
+  const convertXmlToTxt = async (file, delimiter, key) => {
+    const response = await fileConverterService.xmlToTxt(file, delimiter, key);
     setDataState(response);
     return response.status;
   };
 
-  const convertJsonToTxt = async (file) => {
-    const response = await fileConverterService.jsonToTxt(file);
+  const convertJsonToTxt = async (file, delimiter, key) => {
+    const response = await fileConverterService.jsonToTxt(file, delimiter, key);
     setDataState(response);
     return response.status;
   };

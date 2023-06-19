@@ -1,3 +1,4 @@
+import { createToken, encrypt, encryptCards } from "@/util/cryptoUtils";
 import {
   obtainDataFromJSON,
   obtainDataFromTXT,
@@ -5,15 +6,16 @@ import {
 } from "@/util/obtainContentUtils";
 
 const fileConverterService = {
-  txtToJson: async (file) => {
+  txtToJson: async (file, delimiter, key) => {
     try {
       const content = await obtainDataFromTXT(file);
+      const encryptedContent = encryptCards(content, key, delimiter);
+      const token = createToken({ encryptedContent, delimiter });
       const response = await fetch("/api/convert/txt-to-json", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content }),
       });
       const responseJson = await response.json();
 
@@ -31,15 +33,16 @@ const fileConverterService = {
       return { status: false, url: "", extension: "", convertedContent: "" };
     }
   },
-  txtToXml: async (file) => {
+  txtToXml: async (file, delimiter, key) => {
     try {
       const content = await obtainDataFromTXT(file);
+      const encryptedContent = encryptCards(content, key, delimiter);
+      const token = createToken({ encryptedContent, delimiter });
       const response = await fetch("/api/convert/txt-to-xml", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content }),
       });
       const responseJson = await response.json();
 
@@ -57,15 +60,16 @@ const fileConverterService = {
       return { status: false, url: "", extension: "", convertedContent: "" };
     }
   },
-  jsonToTxt: async (file) => {
+  jsonToTxt: async (file, delimiter, key) => {
     try {
       const content = await obtainDataFromJSON(file);
+      const encryptedKey = encrypt(key, process.env.NEXT_PUBLIC_PRIVATE_KEY);
+      const token = createToken({ content, encryptedKey, delimiter });
       const response = await fetch("/api/convert/json-to-txt", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content }),
       });
       const responseJson = await response.json();
 
@@ -83,15 +87,16 @@ const fileConverterService = {
       return { status: false, url: "", extension: "", convertedContent: "" };
     }
   },
-  xmlToTxt: async (file) => {
+  xmlToTxt: async (file, delimiter, key) => {
     try {
       const content = await obtainDataFromXML(file);
+      const encryptedKey = encrypt(key, process.env.NEXT_PUBLIC_PRIVATE_KEY);
+      const token = createToken({ content, encryptedKey, delimiter });
       const response = await fetch("/api/convert/xml-to-txt", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content }),
       });
 
       const responseJson = await response.json();
