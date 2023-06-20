@@ -10,6 +10,8 @@ import Image from "next/image";
 import { useFileConverter } from "@/hooks/useFileConverter";
 import { useEffect, useState } from "react";
 import { TRANSLATE_TYPE } from "@/util/constants";
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 class TypeFile {
   id;
@@ -53,7 +55,10 @@ export default function Home() {
     let response = {};
 
     if (delimiter === "" || secret === "")
-      return alert("Debes colocar un delimitador y una llave secreta");
+      return toast.error("Debes colocar un delimitador y una llave secreta", {
+        position: toast.POSITION.TOP_RIGHT,
+        theme: "dark"
+      });
 
     switch (selectedType) {
       case TRANSLATE_TYPE.TXT:
@@ -69,9 +74,22 @@ export default function Home() {
         response = await convertTxtToXml(inputFile, delimiter, secret);
         break;
       default:
-        return alert("Debes seleccionar un tipo de archivo");
+        return  toast.error("Debes seleccionar un tipo de archivo", {
+          position: toast.POSITION.TOP_RIGHT,
+          theme: "dark"
+      });
     }
-    alert(response.message);
+    if (response.message === "File Converted Sucessfully") {
+    toast.success(response.message, {
+     position: toast.POSITION.TOP_RIGHT,
+     theme: "dark"
+      });
+    } else {
+      toast.error(response.message, {
+     position: toast.POSITION.TOP_RIGHT,
+     theme: "dark"
+      });
+    }
   };
 
   const onChangeFile = async (file) => {
@@ -104,7 +122,6 @@ export default function Home() {
   return (
     <main style={{ padding: 32 }}>
       <h2 style={{ marginBottom: 12 }}>File converter & encrypter</h2>
-
       <div className={styles.containerFile}>
         <span className={styles.spanFile} id="spanFile">
           {inputFileName}
@@ -157,7 +174,7 @@ export default function Home() {
           />
         </div>
 
-        <div style={{ alignSelf: "center" }}>
+        <div style={{ alignSelf: "center", padding:"24px 0"}}>
           <label name="file_type">Elije el tipo de archivo a convertir:</label>
           <select
             id="file_type"
@@ -197,6 +214,7 @@ export default function Home() {
           </a>
         </div>
       </section>
+       <ToastContainer />
     </main>
   );
 }
