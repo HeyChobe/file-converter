@@ -28,7 +28,12 @@ export default function Home() {
   const {
     result,
     originContent,
+    convertedContent,
     obtainContent,
+    convertXmlToTxt,
+    convertTxtToJson,
+    convertJsonToTxt,
+    convertTxtToXml,
   } = useFileConverter();
 
   const [inputFile, setInputFile] = useState(null);
@@ -39,15 +44,33 @@ export default function Home() {
   const [secret, setSecret] = useState("");
   const [selectedType, setSelectedType] = useState(-1);
 
-  const [generatedPreview, setGeneratedPreview] = useState('');
-
   const callConverter = async () => {
-    console.log('Should call API here');
-    setGeneratedPreview('asdasd');
-  }
+    let response = {};
+
+    if (delimiter === "" || secret === "")
+      return alert("Debes colocar un delimitador y una llave secreta");
+
+    switch (selectedType) {
+      case TRANSLATE_TYPE.TXT:
+        response =
+          inputFile.type === "application/json"
+            ? await convertJsonToTxt(inputFile, delimiter, secret)
+            : await convertXmlToTxt(inputFile, delimiter, secret);
+        break;
+      case TRANSLATE_TYPE.JSON:
+        response = await convertTxtToJson(inputFile, delimiter, secret);
+        break;
+      case TRANSLATE_TYPE.XML:
+        response = await convertTxtToXml(inputFile, delimiter, secret);
+        break;
+      default:
+        return alert("Debes seleccionar un tipo de archivo");
+    }
+    alert(response.message);
+  };
 
   const onChangeFile = async (file) => {
-    if (!file){
+    if (!file) {
       alert("error");
       return;
     }
@@ -68,6 +91,7 @@ export default function Home() {
       default:
         return;
     }
+
     setInputFile(file);
     setInputFileName(file.name);
     await obtainContent(file);
@@ -98,7 +122,10 @@ export default function Home() {
         />
       </div>
 
-      <section style={{ display: originContent ? "flex" : "none" }} className={styles.sectionStyle}>
+      <section
+        style={{ display: originContent ? "flex" : "none" }}
+        className={styles.sectionStyle}
+      >
         <div>
           <div className={styles.preview}>
             <p>{originContent}</p>
