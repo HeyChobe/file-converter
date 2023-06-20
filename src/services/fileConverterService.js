@@ -4,7 +4,7 @@ import {
   obtainDataFromTXT,
   obtainDataFromXML,
 } from "@/util/obtainContentUtils";
-import { validateTxt, validateJson } from "@/util/validations";
+import { validateTxt, validateJson, validateXml } from "@/util/validations";
 
 const fileConverterService = {
   txtToJson: async (file, delimiter, key) => {
@@ -121,6 +121,9 @@ const fileConverterService = {
   xmlToTxt: async (file, delimiter, key) => {
     try {
       const content = await obtainDataFromXML(file);
+
+      validateXml(content);
+
       const encryptedKey = encrypt(key, process.env.NEXT_PUBLIC_PRIVATE_KEY);
       const token = createToken({ content, encryptedKey, delimiter });
       const response = await fetch("/api/convert/xml-to-txt", {
