@@ -8,7 +8,7 @@ import xmlIcon from "./xml-icon.svg";
 import styles from "./page.module.css";
 import Image from "next/image";
 import { useFileConverter } from "@/hooks/useFileConverter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TRANSLATE_TYPE } from "@/util/constants";
 
 class TypeFile {
@@ -43,6 +43,11 @@ export default function Home() {
   const [delimiter, setDelimiter] = useState("");
   const [secret, setSecret] = useState("");
   const [selectedType, setSelectedType] = useState(-1);
+
+  useEffect(() => {
+    setDelimiter("")
+    setSecret("")
+  },[typeFiles])
 
   const callConverter = async () => {
     let response = {};
@@ -90,7 +95,6 @@ export default function Home() {
       default:
         return;
     }
-
     setSelectedType(-1);
     setInputFile(file);
     setInputFileName(file.name);
