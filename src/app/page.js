@@ -40,7 +40,7 @@ export default function Home() {
   const [inputFileName, setInputFileName] = useState("Subir archivo");
   const [inputTypeIcon, setInputTypeIcon] = useState(uploadIcon);
   const [typeFiles, setTypeFiles] = useState([txtType, jsonType, xmlType]);
-  const [delimiter, setDelimiter] = useState(";");
+  const [delimiter, setDelimiter] = useState("");
   const [secret, setSecret] = useState("");
   const [selectedType, setSelectedType] = useState(-1);
 
@@ -70,6 +70,10 @@ export default function Home() {
   };
 
   const onChangeFile = async (file) => {
+    if (!file) {
+      return;
+    }
+
     switch (file.type) {
       case "text/plain":
         setInputTypeIcon(txtIcon);
@@ -77,15 +81,17 @@ export default function Home() {
         break;
       case "text/xml":
         setInputTypeIcon(xmlIcon);
-        setTypeFiles([txtType, jsonType]);
+        setTypeFiles([txtType]);
         break;
       case "application/json":
         setInputTypeIcon(jsonIcon);
-        setTypeFiles([txtType, xmlType]);
+        setTypeFiles([txtType]);
         break;
       default:
         return;
     }
+
+    setSelectedType(-1);
     setInputFile(file);
     setInputFileName(file.name);
     await obtainContent(file);
