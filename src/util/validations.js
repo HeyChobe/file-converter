@@ -9,6 +9,11 @@ const polygonXmlExpected =
 
 export const validateTxt = (content, delimiter) => {
   content.forEach((client) => {
+    if (!client.includes(delimiter))
+      throw new Error(
+        `El delimitador no está presente en el contenido en ${client}`
+      );
+
     const [id, names, lastnames, cardId, type, tel, polygon] =
       client.split(delimiter);
 
