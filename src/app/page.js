@@ -26,35 +26,27 @@ const xmlType = new TypeFile(2, '.xml');
 export default function Home() {
   const {
     result,
-    convertXmlToTxt,
-    convertTxtToJson,
-    convertJsonToTxt,
-    convertTxtToXml,
+    originContent,
+    obtainContent,
   } = useFileConverter();
 
   const [inputFileName, setInputFileName] = useState('Subir archivo');
   const [inputTypeIcon, setInputTypeIcon] = useState(uploadIcon);
   const [typeFiles, setTypeFiles] = useState([txtType, jsonType, xmlType]);
 
-  const [uploadPreview, setUploadPreview] = useState('');
   const [generatedPreview, setGeneratedPreview] = useState('');
 
-  const loadFileAsText = (file) => {
-    var fileToLoad = file;
-    var fileReader = new FileReader();
-    fileReader.onload = function (fileLoadedEvent) {
-      var textFromFileLoaded = fileLoadedEvent.target.result;
-      setUploadPreview(textFromFileLoaded);
-    };
-    fileReader.readAsText(fileToLoad, "UTF-8");
-  }
-
-  const callConverter = () => {
+  const callConverter = async () => {
     console.log('Should call API here');
     setGeneratedPreview('asdasd');
   }
 
   const onChangeFile = async (file) => {
+    if (!file){
+      alert("error");
+      return;
+    }
+
     switch (file.type) {
       case 'text/plain':
         setInputTypeIcon(txtIcon);
@@ -73,10 +65,7 @@ export default function Home() {
     }
 
     setInputFileName(file.name);
-    loadFileAsText(file);
-
-    const status = await convertXmlToTxt(file); //change for the convert type needed
-    if (!status) alert("error");
+    await obtainContent(file);
   };
 
   return (
@@ -97,10 +86,10 @@ export default function Home() {
         />
       </div>
 
-      <section style={{ display: uploadPreview ? "flex" : "none" }} className={styles.sectionStyle}>
+      <section style={{ display: originContent ? "flex" : "none" }} className={styles.sectionStyle}>
         <div>
           <div className={styles.preview}>
-            <p>{uploadPreview}</p>
+            <p>{originContent}</p>
           </div>
 
           <label name="delimitator">Delimitador</label>
