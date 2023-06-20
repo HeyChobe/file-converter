@@ -1,14 +1,15 @@
 import { DOMParser } from "xmldom";
 import { TRANSLATE_TYPE } from "./constants";
 import { obtainBlob } from "./obtainContentUtils";
+import { decrypt } from "./cryptoUtils";
 
-export const txtToXml = (content) => {
+export const txtToXml = (content, delimiter) => {
   const xmlData = `
    <clientes>
     ${content
       .map((client) => {
         const [id, names, lastnames, cardId, type, telephone, polygon] =
-          client.split(";");
+          client.split(delimiter);
         return `<cliente>
         <documento>${id}</documento>
         <nombres>${names}</nombres>
@@ -28,10 +29,10 @@ export const txtToXml = (content) => {
   };
 };
 
-export const txtToJson = (content) => {
+export const txtToJson = (content, delimiter) => {
   const dataToJson = content.map((client) => {
     const [id, names, lastnames, cardId, type, telephone, polygon] =
-      client.split(";");
+      client.split(delimiter);
 
     const coordinates = polygon
       .slice(2, -2)
@@ -72,7 +73,7 @@ export const txtToJson = (content) => {
   };
 };
 
-export const xmlToTxt = (xmlContent) => {
+export const xmlToTxt = (xmlContent, delimiter, key) => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlContent, "application/xml");
   const content = xmlDoc.getElementsByTagName("cliente");
@@ -89,9 +90,13 @@ export const xmlToTxt = (xmlContent) => {
         .getElementsByTagName("poligono")[0]
         .textContent.replace("POLYGON ", "");
 
-      return `${id};${names};${lastnames};${cardId};${type};${telephone};${polygon};`;
+      return `${id};${names};${lastnames};${decrypt(
+        cardId,
+        key
+      )};${type};${telephone};${polygon};`;
     })
-    .join("\n");
+    .join("\n")
+    .replaceAll(";", delimiter);
 
   return {
     blob: obtainBlob(TRANSLATE_TYPE.TXT, txtData),
@@ -99,7 +104,7 @@ export const xmlToTxt = (xmlContent) => {
   };
 };
 
-export const jsonToTxt = (content) => {
+export const jsonToTxt = (content, delimiter, key) => {
   const txtData = content
     .map((client) => {
       const {
@@ -118,10 +123,13 @@ export const jsonToTxt = (content) => {
         (polygon) => `(${polygon.map((linearRing) => linearRing.join(" "))})`
       )})`;
 
-      return `${documento};${nombres};${apellidos};${tarjeta};${tipo};${telefono};${polygons};`;
+      return `${documento};${nombres};${apellidos};${decrypt(
+        tarjeta,
+        key
+      )};${tipo};${telefono};${polygons};`;
     })
-    .join("\n");
-
+    .join("\n")
+    .replaceAll(";", delimiter);
   return {
     blob: obtainBlob(TRANSLATE_TYPE.TXT, txtData),
     convertedContent: txtData,
