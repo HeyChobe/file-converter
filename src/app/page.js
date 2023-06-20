@@ -45,28 +45,28 @@ export default function Home() {
   const [selectedType, setSelectedType] = useState(-1);
 
   const callConverter = async () => {
-    let status = false;
+    let response = {};
 
     if (delimiter === "" || secret === "")
       return alert("Debes colocar un delimitador y una llave secreta");
 
     switch (selectedType) {
       case TRANSLATE_TYPE.TXT:
-        status =
+        response =
           inputFile.type === "application/json"
             ? await convertJsonToTxt(inputFile, delimiter, secret)
             : await convertXmlToTxt(inputFile, delimiter, secret);
         break;
       case TRANSLATE_TYPE.JSON:
-        status = await convertTxtToJson(inputFile, delimiter, secret);
+        response = await convertTxtToJson(inputFile, delimiter, secret);
         break;
       case TRANSLATE_TYPE.XML:
-        status = await convertTxtToXml(inputFile, delimiter, secret);
+        response = await convertTxtToXml(inputFile, delimiter, secret);
         break;
       default:
         return alert("Debes seleccionar un tipo de archivo");
     }
-    if (!status) alert("error");
+    alert(response.message);
   };
 
   const onChangeFile = async (file) => {

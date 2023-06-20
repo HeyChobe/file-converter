@@ -6,12 +6,9 @@ export async function POST(req) {
   const headersList = new Headers(req.headers);
   const token = headersList.get("Authorization").split(" ")[1];
   const tokenVerify = verifyToken(token);
-  if (!tokenVerify)
-    return NextResponse.json({
-      status: false,
-      blob: "",
-      convertedContent: "",
-    });
+
+  if (!tokenVerify) throw new Error("Token Invalido");
+
   const { content, encryptedKey, delimiter } = tokenVerify;
   const key = decrypt(encryptedKey, process.env.NEXT_PUBLIC_PRIVATE_KEY);
   const { blob, convertedContent } = jsonToTxt(content, delimiter, key);
