@@ -51,7 +51,7 @@ export default function Home() {
     setDelimiter("")
     setSecret("")
     setConvertedContent("")
-  },[typeFiles])
+  }, [typeFiles])
 
   const callConverter = async () => {
     let response = {};
@@ -76,20 +76,20 @@ export default function Home() {
         response = await convertTxtToXml(inputFile, delimiter, secret);
         break;
       default:
-        return  toast.error("Debes seleccionar un tipo de archivo", {
+        return toast.error("Debes seleccionar un tipo de archivo", {
           position: toast.POSITION.TOP_RIGHT,
           theme: "dark"
-      });
+        });
     }
     if (response.message === "File Converted Sucessfully") {
-    toast.success(response.message, {
-     position: toast.POSITION.TOP_RIGHT,
-     theme: "dark"
+      toast.success(response.message, {
+        position: toast.POSITION.TOP_RIGHT,
+        theme: "dark"
       });
     } else {
       toast.error(response.message, {
-     position: toast.POSITION.TOP_RIGHT,
-     theme: "dark"
+        position: toast.POSITION.TOP_RIGHT,
+        theme: "dark"
       });
     }
   };
@@ -150,7 +150,9 @@ export default function Home() {
         className={styles.sectionStyle}
       >
         <div className={styles.preview}>
-          <p>{originContent}</p>
+          <pre>
+            <code>{originContent}</code>
+          </pre>
         </div>
 
         <div className={styles.options}>
