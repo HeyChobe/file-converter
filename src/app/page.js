@@ -202,9 +202,11 @@ export default function Home() {
         </div>
 
         <div style={{ opacity: convertedContent ? 1 : 0 }}>
-          <div className={styles.preview}>
-            <p>{convertedContent}</p>
-          </div>
+        <div className={styles.preview}>
+          <pre>
+            <code>{convertedContent}</code>
+          </pre>
+        </div>
 
           <a
             className={styles.btn}
