@@ -8,8 +8,10 @@ import xmlIcon from "./xml-icon.svg";
 import styles from "./page.module.css";
 import Image from "next/image";
 import { useFileConverter } from "@/hooks/useFileConverter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TRANSLATE_TYPE } from "@/util/constants";
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 class TypeFile {
   id;
@@ -32,6 +34,7 @@ export default function Home() {
     obtainContent,
     convertXmlToTxt,
     convertTxtToJson,
+    setConvertedContent,
     convertJsonToTxt,
     convertTxtToXml,
   } = useFileConverter();
@@ -44,11 +47,20 @@ export default function Home() {
   const [secret, setSecret] = useState("");
   const [selectedType, setSelectedType] = useState(-1);
 
+  useEffect(() => {
+    setDelimiter("")
+    setSecret("")
+    setConvertedContent("")
+  },[typeFiles])
+
   const callConverter = async () => {
     let response = {};
 
     if (delimiter === "" || secret === "")
-      return alert("Debes colocar un delimitador y una llave secreta");
+      return toast.error("Debes colocar un delimitador y una llave secreta", {
+        position: toast.POSITION.TOP_RIGHT,
+        theme: "dark"
+      });
 
     switch (selectedType) {
       case TRANSLATE_TYPE.TXT:
@@ -64,9 +76,22 @@ export default function Home() {
         response = await convertTxtToXml(inputFile, delimiter, secret);
         break;
       default:
-        return alert("Debes seleccionar un tipo de archivo");
+        return  toast.error("Debes seleccionar un tipo de archivo", {
+          position: toast.POSITION.TOP_RIGHT,
+          theme: "dark"
+      });
     }
-    alert(response.message);
+    if (response.message === "File Converted Sucessfully") {
+    toast.success(response.message, {
+     position: toast.POSITION.TOP_RIGHT,
+     theme: "dark"
+      });
+    } else {
+      toast.error(response.message, {
+     position: toast.POSITION.TOP_RIGHT,
+     theme: "dark"
+      });
+    }
   };
 
   const onChangeFile = async (file) => {
@@ -90,7 +115,6 @@ export default function Home() {
       default:
         return;
     }
-
     setSelectedType(-1);
     setInputFile(file);
     setInputFileName(file.name);
@@ -98,66 +122,62 @@ export default function Home() {
   };
 
   return (
-    <main style={{ padding: 32 }}>
+    <main className={styles.main}>
       <h2 style={{ marginBottom: 12 }}>File converter & encrypter</h2>
-
       <div className={styles.containerFile}>
-        <span className={styles.spanFile} id="spanFile">
+        <span className={styles.spanFile} id='spanFile'>
           {inputFileName}
         </span>
         <Image
           src={inputTypeIcon}
-          alt="file type icon"
+          alt='file type icon'
           className={styles.iconFile}
           width={24}
           height={24}
         />
         <input
           className={styles.inputFile}
-          type="file"
-          id="file"
-          name="file"
-          accept=".txt, .json, .xml"
+          type='file'
+          id='file'
+          name='file'
+          accept='.txt, .json, .xml'
           onChange={(e) => onChangeFile(e.target.files[0])}
         />
       </div>
 
       <section
-        style={{ display: originContent ? "flex" : "none" }}
+        style={{ display: originContent ? 'flex' : 'none' }}
         className={styles.sectionStyle}
       >
-        <div>
-          <div className={styles.preview}>
-            <p>{originContent}</p>
-          </div>
+        <div className={styles.preview}>
+          <p>{originContent}</p>
+        </div>
 
-          <label name="delimitator">Delimitador</label>
+        <div className={styles.options}>
+          <label name='delimitator'>Delimitador</label>
           <input
-            type="text"
-            id="delimitator"
-            name="delimitator"
+            type='text'
+            id='delimitator'
+            name='delimitator'
             style={{ marginBottom: 20 }}
             value={delimiter}
             onChange={(e) => setDelimiter(e.target.value)}
           />
-
-          <label name="encryption_key">Clave de cifrado </label>
+          <label name='encryption_key'>Clave de cifrado </label>
           <input
-            type="text"
-            id="encryption_key"
-            name="encryption_key"
+            type='text'
+            id='encryption_key'
+            name='encryption_key'
+            style={{ marginBottom: 20 }}
             value={secret}
             onChange={(e) => {
               setSecret(e.target.value);
             }}
           />
-        </div>
-
-        <div style={{ alignSelf: "center" }}>
-          <label name="file_type">Elije el tipo de archivo a convertir:</label>
+          <label name='file_type'>Elije el tipo de archivo a convertir:</label>
           <select
-            id="file_type"
-            name="file_type"
+            id='file_type'
+            name='file_type'
             value={selectedType}
             onChange={(e) => {
               setSelectedType(parseInt(e.target.value));
@@ -193,6 +213,7 @@ export default function Home() {
           </a>
         </div>
       </section>
+      <ToastContainer />
     </main>
   );
 }

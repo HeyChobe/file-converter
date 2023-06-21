@@ -70,6 +70,7 @@ export const useFileConverter = () => {
     result,
     originContent,
     convertedContent,
+    setConvertedContent,
     convertTxtToXml,
     convertJsonToTxt,
     convertTxtToJson,
