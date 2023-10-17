@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "crypto-js": "^4.1.1",
-    "eslint": "8.41.0",
+    "eslint": "8.50.0",
     "eslint-config-next": "13.4.4",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "8.5.1",
